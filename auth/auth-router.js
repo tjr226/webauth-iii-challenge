@@ -50,3 +50,5 @@ function generateToken(user) {
         username: user.username,   
     }
 }
+
+module.exports = router;
