@@ -24,13 +24,13 @@ router.post('/register', (req, res) => {
 });
 
 router.post('/login', (req, res) => {
-    let { username, password } = req.body;
-
+    const { username, password } = req.body;
     Users.findBy({ username })
         .first()
         .then(user => {
             if (user && bcrypt.compareSync(password, user.password)) {
                 const token = generateToken(user);
+                // console.log(token);
                 res.status(200).json({
                     message: `Welcome ${user.username}`,
                     token
@@ -40,6 +40,7 @@ router.post('/login', (req, res) => {
             }
         })
         .catch(error => {
+            // console.log(error);
             res.status(500).json(error);
         });
 });
@@ -47,8 +48,15 @@ router.post('/login', (req, res) => {
 function generateToken(user) {
     const payload = {
         subject: user.id,
-        username: user.username,   
+        username: user.username,
+        department: user.department  
     }
+
+    const options = {
+        expiresIn: '1d',
+    };
+
+    return jwt.sign(payload, secrets.jwtSecret, options);
 }
 
 module.exports = router;
